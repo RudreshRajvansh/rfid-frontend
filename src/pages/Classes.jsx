@@ -6,13 +6,8 @@ import { GraduationCap, Plus, Pencil, Trash2, Users, Search } from 'lucide-react
 import toast from 'react-hot-toast';
 
 const initialForm = {
-  class_name: '',
-  department: '',
-  semester: 1,
-  section: '',
-  room_number: '',
-  class_teacher_name: '',
-  class_teacher_email: '',
+  class_name: '', department: '', semester: 1, section: '',
+  room_number: '', class_teacher_name: '', class_teacher_email: '',
   total_capacity: 60,
 };
 
@@ -104,7 +99,7 @@ export default function Classes() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Classes</h1>
-          <p className="text-sm text-gray-500 mt-1">{classes.length} total classes</p>
+          <p className="text-sm text-gray-500 mt-1">{classes.length} classes</p>
         </div>
         <Button onClick={openCreate}><Plus className="w-4 h-4" /> Add Class</Button>
       </div>
@@ -125,7 +120,7 @@ export default function Classes() {
         <EmptyState
           icon={GraduationCap}
           title="No classes found"
-          description={search ? 'Try a different search term.' : 'Create your first class to get started.'}
+          description={search ? 'Try different keywords.' : 'Add a class to get started.'}
           action={!search && <Button onClick={openCreate}><Plus className="w-4 h-4" /> Add Class</Button>}
         />
       ) : (
@@ -186,7 +181,7 @@ export default function Classes() {
         </div>
       )}
 
-      {/* Modal */}
+      {/* Form modal */}
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}

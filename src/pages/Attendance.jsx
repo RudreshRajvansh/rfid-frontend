@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api';
-import { Card, CardHeader, CardBody, Button, Badge, EmptyState, LoadingScreen } from '../components/UI';
+import { Card, CardHeader, CardBody, StatCard, Button, Badge, EmptyState, LoadingScreen } from '../components/UI';
 import { ClipboardList, Download, UserCheck, UserX, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import {
@@ -75,8 +75,8 @@ export default function Attendance() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Attendance Report</h1>
-          <p className="text-sm text-gray-500 mt-1">Daily class attendance breakdown</p>
+          <h1 className="text-2xl font-bold text-gray-900">Attendance</h1>
+          <p className="text-sm text-gray-500 mt-1">Daily report by class</p>
         </div>
         {report && (
           <Button variant="secondary" onClick={exportCSV}>
@@ -123,16 +123,15 @@ export default function Attendance() {
         <LoadingScreen />
       ) : report && report.length > 0 ? (
         <>
-          {/* Summary row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <SummaryCard icon={ClipboardList} label="Total Students" value={total} color="bg-primary-50 text-primary-600" />
-            <SummaryCard icon={UserCheck} label="Present" value={present} color="bg-green-50 text-green-600" />
-            <SummaryCard icon={UserX} label="Absent" value={absent} color="bg-red-50 text-red-600" />
-            <SummaryCard
+            <StatCard icon={ClipboardList} label="Total" value={total} color="primary" />
+            <StatCard icon={UserCheck} label="Present" value={present} color="green" />
+            <StatCard icon={UserX} label="Absent" value={absent} color="red" />
+            <StatCard
               icon={Clock}
-              label="Attendance Rate"
+              label="Rate"
               value={`${total > 0 ? ((present / total) * 100).toFixed(1) : 0}%`}
-              color="bg-amber-50 text-amber-600"
+              color="amber"
             />
           </div>
 
@@ -208,26 +207,10 @@ export default function Attendance() {
       ) : (
         <EmptyState
           icon={ClipboardList}
-          title="No attendance data"
-          description="No records found for the selected date and class."
+          title="No records"
+          description="Nothing found for this class and date."
         />
       )}
     </div>
-  );
-}
-
-function SummaryCard({ icon: Icon, label, value, color }) {
-  return (
-    <Card>
-      <div className="p-4 flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
-          <Icon className="w-5 h-5" />
-        </div>
-        <div>
-          <p className="text-xs text-gray-500">{label}</p>
-          <p className="text-xl font-bold text-gray-900">{value}</p>
-        </div>
-      </div>
-    </Card>
   );
 }

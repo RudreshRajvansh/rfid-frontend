@@ -9,9 +9,11 @@ const genderOptions = ['Male', 'Female', 'Other'];
 const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
 const initialForm = {
-  uid: '', roll_number: '', enrollment_number: '', first_name: '', last_name: '',
-  date_of_birth: '', gender: 'Male', blood_group: '', student_email: '', student_phone: '',
-  parent_name: '', parent_phone: '', emergency_contact: '', address: {},
+  uid: '', roll_number: '', enrollment_number: '',
+  first_name: '', last_name: '', date_of_birth: '',
+  gender: 'Male', blood_group: '', student_email: '',
+  student_phone: '', parent_name: '', parent_phone: '',
+  emergency_contact: '', address: {},
   admission_year: new Date().getFullYear(), class_id: '',
 };
 
@@ -143,7 +145,7 @@ export default function Students() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Students</h1>
-          <p className="text-sm text-gray-500 mt-1">{students.length} total students</p>
+          <p className="text-sm text-gray-500 mt-1">{students.length} registered</p>
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" onClick={exportCSV}><Download className="w-4 h-4" /> Export</Button>
@@ -179,7 +181,7 @@ export default function Students() {
         <EmptyState
           icon={Users}
           title="No students found"
-          description={search || classFilter ? 'Try adjusting your filters.' : 'Add your first student to get started.'}
+          description={search || classFilter ? 'Try adjusting filters.' : 'Add a student to get started.'}
           action={!search && !classFilter && <Button onClick={openCreate}><Plus className="w-4 h-4" /> Add Student</Button>}
         />
       ) : (

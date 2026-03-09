@@ -1,5 +1,4 @@
 const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
-const REQUEST_TIMEOUT = 15000;
 
 function getApiKey() {
   return localStorage.getItem('rfid_api_key') || '';
@@ -18,7 +17,7 @@ async function request(endpoint, options = {}) {
   }
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+  const timeoutId = setTimeout(() => controller.abort(), 15_000);
 
   try {
     const res = await fetch(url, {
@@ -37,7 +36,7 @@ async function request(endpoint, options = {}) {
     return await res.json();
   } catch (e) {
     if (e.name === 'AbortError') {
-      const err = new Error('Request timed out. Please check your connection.');
+      const err = new Error('Request timed out');
       err.status = 408;
       throw err;
     }
@@ -48,13 +47,9 @@ async function request(endpoint, options = {}) {
 }
 
 export const api = {
-  // Health
   health: () => request('/', { auth: false }),
-
-  // Dashboard
   getStats: () => request('/api/stats', { auth: false }),
 
-  // Scan
   scan: (uid, macAddress) =>
     request('/api/scan', {
       method: 'POST',
@@ -62,11 +57,9 @@ export const api = {
       auth: false,
     }),
 
-  // Attendance
   getDailyReport: (date, classId) =>
     request(`/api/attendance/daily?date=${encodeURIComponent(date)}&class_id=${encodeURIComponent(classId)}`, { auth: false }),
 
-  // Classes
   getClasses: () => request('/api/classes'),
   getClass: (id) => request(`/api/class?id=${encodeURIComponent(id)}`),
   createClass: (data) =>
@@ -76,7 +69,6 @@ export const api = {
   deleteClass: (id) =>
     request(`/api/class?id=${encodeURIComponent(id)}`, { method: 'DELETE' }),
 
-  // Students
   getStudents: (classId) => {
     const q = classId ? `?class_id=${encodeURIComponent(classId)}` : '';
     return request(`/api/students${q}`);
@@ -89,7 +81,6 @@ export const api = {
   deleteStudent: (id) =>
     request(`/api/student?id=${encodeURIComponent(id)}`, { method: 'DELETE' }),
 
-  // Logs
   getLogs: (params = {}) => {
     const q = new URLSearchParams();
     if (params.limit) q.set('limit', params.limit);

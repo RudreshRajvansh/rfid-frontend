@@ -58,7 +58,7 @@ export default function SettingsPage() {
     <div className="space-y-6 max-w-2xl">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="text-sm text-gray-500 mt-1">Manage API connection and authentication</p>
+          <p className="text-sm text-gray-500 mt-1">Server connection & API key</p>
       </div>
 
       {/* Server Status */}
@@ -66,7 +66,7 @@ export default function SettingsPage() {
         <CardHeader className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Server className="w-5 h-5 text-gray-400" />
-            <h2 className="text-base font-semibold text-gray-900">Server Status</h2>
+            <h2 className="text-base font-semibold text-gray-900">Server</h2>
           </div>
           <Button variant="ghost" size="sm" onClick={checkServer} disabled={checking}>
             {checking ? 'Checking...' : 'Refresh'}
@@ -77,7 +77,7 @@ export default function SettingsPage() {
             <div className="flex items-center gap-3">
               <CheckCircle className="w-5 h-5 text-green-500" />
               <div>
-                <p className="font-medium text-gray-900">Server Online</p>
+                <p className="font-medium text-gray-900">Connected</p>
                 <p className="text-sm text-gray-500">Version: {serverStatus.version || 'Unknown'}</p>
               </div>
             </div>
@@ -85,8 +85,8 @@ export default function SettingsPage() {
             <div className="flex items-center gap-3">
               <XCircle className="w-5 h-5 text-red-500" />
               <div>
-                <p className="font-medium text-gray-900">Server Offline</p>
-                <p className="text-sm text-gray-500">Unable to connect to the backend server</p>
+                <p className="font-medium text-gray-900">Unreachable</p>
+                <p className="text-sm text-gray-500">Can't reach the backend</p>
               </div>
             </div>
           )}
@@ -98,7 +98,7 @@ export default function SettingsPage() {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Key className="w-5 h-5 text-gray-400" />
-            <h2 className="text-base font-semibold text-gray-900">Admin API Key</h2>
+            <h2 className="text-base font-semibold text-gray-900">API Key</h2>
           </div>
         </CardHeader>
         <CardBody>
@@ -121,7 +121,7 @@ export default function SettingsPage() {
           ) : (
             <form onSubmit={handleLogin} className="space-y-4">
               <p className="text-sm text-gray-500">
-                Enter your admin API key to access class management, student records, and log management.
+                Enter your API key to manage classes, students, and logs.
               </p>
               <div className="flex gap-2">
                 <input
@@ -138,7 +138,7 @@ export default function SettingsPage() {
         </CardBody>
       </Card>
 
-      {/* API Base URL */}
+      {/* Config info */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">

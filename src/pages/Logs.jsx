@@ -71,7 +71,7 @@ export default function Logs() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Scan Logs</h1>
-          <p className="text-sm text-gray-500 mt-1">Raw RFID scan records</p>
+          <p className="text-sm text-gray-500 mt-1">Raw RFID tap records</p>
         </div>
         <Button variant="secondary" onClick={exportCSV}>
           <Download className="w-4 h-4" /> Export
@@ -112,7 +112,7 @@ export default function Logs() {
         <EmptyState
           icon={ScrollText}
           title="No logs found"
-          description={dateFilter || uidFilter ? 'Try adjusting your filters.' : 'Scan logs will appear here as students tap their RFID cards.'}
+          description={dateFilter || uidFilter ? 'Try different filters.' : 'Logs show up here when students tap their cards.'}
         />
       ) : (
         <>

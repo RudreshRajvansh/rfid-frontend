@@ -1,17 +1,17 @@
-# Dependencies
+# dependencies
 node_modules/
 
-# Build output
+# build
 dist/
 dist-ssr/
 
-# Environment variables (NEVER commit secrets)
+# env files — don't commit secrets
 .env
 .env.local
 .env.production
 .env.*.local
 
-# Logs
+# logs
 logs/
 *.log
 npm-debug.log*
@@ -20,7 +20,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Editor / IDE
+# editors
 .vscode/*
 !.vscode/extensions.json
 .idea/
@@ -30,10 +30,10 @@ lerna-debug.log*
 *.sln
 *.sw?
 
-# macOS
+# os
 .DS_Store
 Thumbs.db
 
-# Misc
+# misc
 *.local
 .vercel

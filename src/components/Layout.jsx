@@ -26,7 +26,6 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen flex bg-gray-50">
-      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/40 z-40 lg:hidden"
@@ -34,7 +33,6 @@ export default function Layout() {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:z-auto ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
@@ -45,8 +43,8 @@ export default function Layout() {
             <Radio className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900 leading-tight">Admin Panel</h1>
-            <p className="text-xs text-gray-500 leading-tight">Smart RFID Attendance System</p>
+            <h1 className="text-lg font-bold text-gray-900 leading-tight">RFID Admin</h1>
+            <p className="text-xs text-gray-500 leading-tight">Attendance System</p>
           </div>
         </div>
 
@@ -72,7 +70,6 @@ export default function Layout() {
         </nav>
       </aside>
 
-      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="sticky top-0 z-30 h-16 bg-white border-b border-gray-200 flex items-center px-4 lg:px-6">
           <button

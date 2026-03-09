@@ -31,7 +31,7 @@ export default function Dashboard() {
   }
 
   if (loading) return <LoadingScreen />;
-  if (!stats) return <p className="text-gray-500 text-center mt-12">Failed to load dashboard data.</p>;
+  if (!stats) return <p className="text-gray-500 text-center mt-12">Couldn't load dashboard data.</p>;
 
   const pieData = [
     { name: 'Present', value: stats.present_today },
@@ -46,12 +46,8 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-1">Real-time attendance overview</p>
-      </div>
+      <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
 
-      {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <StatCard icon={Users} label="Total Students" value={stats.total_students} color="primary" />
         <StatCard icon={GraduationCap} label="Total Classes" value={stats.total_classes} color="violet" />
@@ -66,7 +62,6 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
           <CardHeader>
@@ -85,7 +80,7 @@ export default function Dashboard() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-gray-400 text-center py-12">No class data available</p>
+              <p className="text-gray-400 text-center py-12">No class data yet</p>
             )}
           </CardBody>
         </Card>
@@ -117,13 +112,13 @@ export default function Dashboard() {
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-gray-400 text-center py-12">No attendance data yet</p>
+              <p className="text-gray-400 text-center py-12">Nothing to show yet</p>
             )}
           </CardBody>
         </Card>
       </div>
 
-      {/* Recent scans */}
+      {/* Recent scans table */}
       <Card>
         <CardHeader>
           <h2 className="text-base font-semibold text-gray-900">Recent Scans</h2>
@@ -151,7 +146,7 @@ export default function Dashboard() {
               </tbody>
             </table>
           ) : (
-            <p className="text-gray-400 text-center py-8">No scans recorded today</p>
+            <p className="text-gray-400 text-center py-8">No scans yet today</p>
           )}
         </div>
       </Card>

@@ -27,9 +27,9 @@ export default class ErrorBoundary extends Component {
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertTriangle className="w-8 h-8 text-red-600" />
             </div>
-            <h1 className="text-xl font-bold text-gray-900">Something went wrong</h1>
+            <h1 className="text-xl font-bold text-gray-900">Something broke</h1>
             <p className="text-sm text-gray-500 mt-2">
-              An unexpected error occurred. Please try refreshing the page.
+              Unexpected error. Try refreshing.
             </p>
             <button
               onClick={this.handleReset}
