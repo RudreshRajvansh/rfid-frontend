@@ -64,21 +64,23 @@ export function StudentProvider({ children }) {
   }, [token, loadProfile]);
 
   // GPS tracking
+  const hasSucceededRef = useRef(false);
+
   const sendPing = useCallback(async (lat, lng) => {
     try {
       const res = await api.studentLocation(lat, lng);
       if (res.success) {
         console.log('[GPS] Ping sent:', res.data);
+        hasSucceededRef.current = true;
         setLastPing(res.data);
         setGpsStatus(res.data.in_class ? 'in_range' : 'out_of_range');
       }
     } catch (e) {
       console.error('[GPS] Ping failed:', e.message);
-      // Don't override GPS status on API error — keep showing location status
-      // Only set error if we never got a successful ping
-      if (!lastPing) setGpsStatus('error');
+      // Only show error if we never had a successful ping
+      if (!hasSucceededRef.current) setGpsStatus('error');
     }
-  }, [lastPing]);
+  }, []); // No dependencies — stable reference
 
   const startTracking = useCallback(() => {
     if (!navigator.geolocation) {
