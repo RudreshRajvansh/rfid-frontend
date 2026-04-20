@@ -68,13 +68,17 @@ export function StudentProvider({ children }) {
     try {
       const res = await api.studentLocation(lat, lng);
       if (res.success) {
+        console.log('[GPS] Ping sent:', res.data);
         setLastPing(res.data);
         setGpsStatus(res.data.in_class ? 'in_range' : 'out_of_range');
       }
-    } catch {
-      setGpsStatus('error');
+    } catch (e) {
+      console.error('[GPS] Ping failed:', e.message);
+      // Don't override GPS status on API error — keep showing location status
+      // Only set error if we never got a successful ping
+      if (!lastPing) setGpsStatus('error');
     }
-  }, []);
+  }, [lastPing]);
 
   const startTracking = useCallback(() => {
     if (!navigator.geolocation) {
@@ -84,20 +88,28 @@ export function StudentProvider({ children }) {
 
     setGpsStatus('tracking');
 
+    const onSuccess = (pos) => {
+      console.log('[GPS] Got position:', pos.coords.latitude, pos.coords.longitude);
+      sendPing(pos.coords.latitude, pos.coords.longitude);
+    };
+
+    const onError = (err) => {
+      console.warn('[GPS] Geolocation error:', err.message, '(code:', err.code, ')');
+      if (err.code === 1) {
+        setGpsStatus('error'); // permission denied
+      } else {
+        setGpsStatus('error'); // position unavailable or timeout
+      }
+    };
+
+    const opts = { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 };
+
     // Get position immediately
-    navigator.geolocation.getCurrentPosition(
-      (pos) => sendPing(pos.coords.latitude, pos.coords.longitude),
-      () => setGpsStatus('error'),
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
+    navigator.geolocation.getCurrentPosition(onSuccess, onError, opts);
 
     // Then every PING_INTERVAL
     pingTimerRef.current = setInterval(() => {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => sendPing(pos.coords.latitude, pos.coords.longitude),
-        () => setGpsStatus('error'),
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
+      navigator.geolocation.getCurrentPosition(onSuccess, onError, opts);
     }, PING_INTERVAL);
   }, [sendPing]);
 
