@@ -1,10 +1,10 @@
 <div align="center">
 
-# RFID Attendance — Admin Panel
+# ClassTracker — Admin Panel & Student App
 
-**Production-ready admin dashboard for the RFID-based smart attendance system.**
+**Admin dashboard + Student companion app for the RFID-based smart attendance system with GPS presence verification.**
 
-Built with **React 19** · **Tailwind CSS v4** · **Vite** · **Recharts**
+Built with **React 19** · **Tailwind CSS v4** · **Vite 7** · **Recharts**
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen)
@@ -36,9 +36,12 @@ Built with **React 19** · **Tailwind CSS v4** · **Vite** · **Recharts**
 
 ## Overview
 
-This is the **frontend admin panel** for an RFID-based attendance tracking system. It connects to a Go backend API and provides a rich interface for managing classes, students, attendance records, and scan logs.
+This repo contains **two interfaces** for an RFID-based attendance tracking system:
 
-The panel is designed for school/institution administrators who need real-time visibility into RFID tap-in/tap-out attendance data.
+1. **Admin Panel** — Dashboard for managing classes, students, attendance, devices, and scan logs
+2. **Student Companion App** — Students view their own attendance and verify classroom presence via background GPS tracking
+
+Connects to a Go backend API. Students log in with roll number + date of birth, and the app silently sends GPS coordinates every 2 minutes to verify they're actually in the classroom.
 
 ---
 
@@ -46,12 +49,16 @@ The panel is designed for school/institution administrators who need real-time v
 
 | Module | Capabilities |
 |--------|-------------|
-| **Dashboard** | Real-time stats (6 metric cards), attendance-by-class bar chart, present/absent pie chart, recent scans feed with 30s auto-refresh |
-| **Classes** | Full CRUD, card grid layout, search, capacity progress bars, student count display |
-| **Students** | Sortable table, search by name/UID, class filter dropdown, CSV export, expandable detail modal, 15-field create/edit form |
-| **Attendance** | Daily reports filterable by class + date, summary cards, per-student in/out times table, attendance pie chart, CSV export |
-| **Scan Logs** | Paginated (50/page), date range + UID filter, CSV export, delete by UID + date |
-| **Settings** | Server health check with latency, API key save/test/remove, backend config display |
+| **Dashboard** | 6 stat cards (incl. "Currently In"), bar chart by class, pie chart, 7-day trend line chart, live attendance table, recent scans with scan_type badges, 30s auto-refresh |
+| **Classes** | Full CRUD, card grid, search, capacity bars, **GPS geofence fields** (lat/lng/radius), "Use Current Location" button |
+| **Students** | Table with responsive columns, search, class filter, CSV export, detail modal, 15-field CRUD form |
+| **Attendance** | Daily reports by class + date, summary cards, attendance table with duration, pie chart, CSV export |
+| **Scan Logs** | Paginated (50/page), **scan_type column with badges**, date + UID + type filters, CSV export |
+| **Devices** | ESP8266 device management — online/offline status, labels, MAC display |
+| **Settings** | Server health check, API key management, config display |
+| **Student Login** | Roll number + DOB auth, dark glassmorphism design |
+| **Student Dashboard** | Today's status, GPS verification % with progress bar, check-in/out times |
+| **Student History** | 60-day color-coded attendance (green=verified, yellow=unverified, red=absent) |
 
 ### Production Features
 
@@ -164,38 +171,45 @@ Navigate to **Settings** in the sidebar, enter your backend API key, and click *
 ```
 rfid-frontend/
 ├── public/
-│   └── favicon.svg             # RFID-themed app icon
+│   └── favicon.svg             # App icon
 ├── src/
-│   ├── api.js                  # API service layer (all backend calls)
-│   ├── App.jsx                 # Root: lazy routes, error boundary, auth provider
+│   ├── api.js                  # API service layer (30+ endpoints)
+│   ├── App.jsx                 # Root: routing, dual layouts, providers
 │   ├── main.jsx                # React DOM entry point
-│   ├── index.css               # Tailwind imports + custom theme + global styles
-│   ├── assets/                 # Static assets (images, etc.)
+│   ├── index.css               # Tailwind imports + custom theme
 │   ├── components/
-│   │   ├── Layout.jsx          # App shell: sidebar nav + header + mobile menu
-│   │   ├── Modal.jsx           # Reusable modal (sm / md / lg / xl sizes)
-│   │   ├── UI.jsx              # Shared primitives: Card, Button, Badge, StatCard, Spinner
-│   │   └── ErrorBoundary.jsx   # React error boundary with retry
+│   │   ├── Layout.jsx          # Admin shell: sidebar + header + Outlet
+│   │   ├── StudentLayout.jsx   # Student shell: header (GPS) + bottom nav
+│   │   ├── Modal.jsx           # Reusable modal (sm / md / lg / xl)
+│   │   ├── UI.jsx              # Card, Button, Badge, StatCard, Spinner
+│   │   └── ErrorBoundary.jsx   # Crash recovery
 │   ├── context/
-│   │   └── AuthContext.jsx     # API key auth state (localStorage-backed)
+│   │   ├── AuthContext.jsx     # Admin API key auth
+│   │   └── StudentContext.jsx  # Student token + GPS tracking loop
 │   └── pages/
-│       ├── Dashboard.jsx       # Stats, charts, recent scans
-│       ├── Classes.jsx         # Class CRUD + grid view
-│       ├── Students.jsx        # Student table + CRUD + CSV export
-│       ├── Attendance.jsx      # Daily report + pie chart
-│       ├── Logs.jsx            # Paginated log viewer + filters
-│       ├── Settings.jsx        # Health check + API key management
-│       └── NotFound.jsx        # 404 catch-all page
-├── .editorconfig               # Editor formatting consistency
-├── .env.example                # Environment variable template
-├── .gitignore                  # Git ignore rules (see CONTRIBUTING.md)
-├── index.html                  # HTML entry with meta tags + font preload
-├── package.json                # Dependencies + scripts
-├── vercel.json                 # Vercel: SPA routing + headers + caching
-├── vite.config.js              # Vite: plugins, proxy, code splitting
-├── CONTRIBUTING.md             # Contributor guide + gitignore reference
-├── SECURITY.md                 # Security practices + secrets handling
-└── README.md                   # This file
+│       ├── Dashboard.jsx       # Stats, 3 charts, live attendance
+│       ├── Classes.jsx         # CRUD + GPS geofence fields
+│       ├── Students.jsx        # 15-field CRUD + detail modal
+│       ├── Attendance.jsx      # Daily report + charts + CSV
+│       ├── Logs.jsx            # Paginated, scan_type filter
+│       ├── Devices.jsx         # ESP8266 device management
+│       ├── Settings.jsx        # Health, API key, config
+│       ├── NotFound.jsx        # 404 page
+│       └── student/
+│           ├── StudentLogin.jsx     # Dark glassmorphism login
+│           ├── StudentDashboard.jsx # Today's status + GPS verification
+│           └── StudentHistory.jsx   # Color-coded attendance history
+├── .editorconfig
+├── .env.example
+├── .gitignore
+├── index.html
+├── package.json
+├── vercel.json
+├── vite.config.js
+├── CONTRIBUTING.md
+├── SECURITY.md
+├── FRONTEND_SUMMARY.md         # Detailed technical documentation
+└── README.md
 ```
 
 ---
@@ -249,15 +263,20 @@ The frontend communicates with these backend endpoints via `src/api.js`:
 
 ## Authentication
 
-This app uses **API key authentication**:
+This app uses **two authentication modes**:
 
-1. The Go backend expects an `X-API-Key` header on all `/api/*` requests
+### Admin Auth (API Key)
+1. The Go backend expects `X-API-Key` header on admin-protected endpoints
 2. Users enter their API key in **Settings → API Key**
-3. The key is stored in the browser's `localStorage` (never sent to third parties)
-4. On each request, `src/api.js` injects the key via the `AuthContext` provider
-5. If no key is set, API requests will return `401 Unauthorized`
+3. Stored in `localStorage('rfid_api_key')` — injected automatically
 
-> **Note:** API keys are secrets. Never commit them to version control. The `.env` file is for the backend URL only — the API key is managed entirely in-browser.
+### Student Auth (Bearer Token)
+1. Students log in at `/student/login` with roll number + date of birth
+2. Backend returns a Bearer token — stored in `localStorage('student_token')`
+3. Token is sent as `Authorization: Bearer <token>` on student API calls
+4. GPS tracking starts automatically after login
+
+> **Note:** API keys and tokens are secrets. Never commit them.
 
 ---
 

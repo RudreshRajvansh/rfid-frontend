@@ -4,6 +4,10 @@ function getApiKey() {
   return localStorage.getItem('rfid_api_key') || '';
 }
 
+function getStudentToken() {
+  return localStorage.getItem('student_token') || '';
+}
+
 async function request(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
   const headers = {
@@ -11,9 +15,14 @@ async function request(endpoint, options = {}) {
     ...options.headers,
   };
 
-  if (options.auth !== false) {
+  if (options.auth !== false && options.studentAuth !== true) {
     const key = getApiKey();
     if (key) headers['X-API-Key'] = key;
+  }
+
+  if (options.studentAuth) {
+    const token = getStudentToken();
+    if (token) headers['Authorization'] = `Bearer ${token}`;
   }
 
   const controller = new AbortController();
@@ -33,6 +42,7 @@ async function request(endpoint, options = {}) {
       throw err;
     }
 
+    if (options.raw) return res;
     return await res.json();
   } catch (e) {
     if (e.name === 'AbortError') {
@@ -47,9 +57,17 @@ async function request(endpoint, options = {}) {
 }
 
 export const api = {
+  // Health
   health: () => request('/', { auth: false }),
-  getStats: () => request('/api/stats', { auth: false }),
 
+  // Dashboard stats
+  getStats: () => request('/api/stats', { auth: false }),
+  getWeeklyStats: (classId) => {
+    const q = classId ? `?class_id=${encodeURIComponent(classId)}` : '';
+    return request(`/api/stats/weekly${q}`, { auth: false });
+  },
+
+  // Scan
   scan: (uid, macAddress) =>
     request('/api/scan', {
       method: 'POST',
@@ -57,9 +75,19 @@ export const api = {
       auth: false,
     }),
 
+  // Attendance
   getDailyReport: (date, classId) =>
     request(`/api/attendance/daily?date=${encodeURIComponent(date)}&class_id=${encodeURIComponent(classId)}`, { auth: false }),
+  getLiveAttendance: (classId) => {
+    const q = classId ? `?class_id=${encodeURIComponent(classId)}` : '';
+    return request(`/api/attendance/live${q}`, { auth: false });
+  },
+  getAttendanceRange: (classId, from, to) =>
+    request(`/api/attendance/range?class_id=${encodeURIComponent(classId)}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`),
+  exportAttendance: (classId, date) =>
+    request(`/api/export?class_id=${encodeURIComponent(classId)}&date=${encodeURIComponent(date)}`, { raw: true }),
 
+  // Classes
   getClasses: () => request('/api/classes'),
   getClass: (id) => request(`/api/class?id=${encodeURIComponent(id)}`),
   createClass: (data) =>
@@ -69,6 +97,7 @@ export const api = {
   deleteClass: (id) =>
     request(`/api/class?id=${encodeURIComponent(id)}`, { method: 'DELETE' }),
 
+  // Students
   getStudents: (classId) => {
     const q = classId ? `?class_id=${encodeURIComponent(classId)}` : '';
     return request(`/api/students${q}`);
@@ -80,15 +109,42 @@ export const api = {
     request(`/api/student?id=${encodeURIComponent(id)}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteStudent: (id) =>
     request(`/api/student?id=${encodeURIComponent(id)}`, { method: 'DELETE' }),
+  getStudentHistory: (uid, limit = 30, offset = 0) =>
+    request(`/api/student/history?uid=${encodeURIComponent(uid)}&limit=${limit}&offset=${offset}`),
 
+  // Logs
   getLogs: (params = {}) => {
     const q = new URLSearchParams();
     if (params.limit) q.set('limit', params.limit);
     if (params.offset != null) q.set('offset', params.offset);
     if (params.date) q.set('date', params.date);
     if (params.uid) q.set('uid', params.uid);
+    if (params.scan_type) q.set('scan_type', params.scan_type);
     return request(`/api/logs?${q.toString()}`);
   },
   deleteLog: (uid, date) =>
     request(`/api/log?uid=${encodeURIComponent(uid)}&date=${encodeURIComponent(date)}`, { method: 'DELETE' }),
+
+  // Devices
+  getDevices: () => request('/api/devices'),
+  createDevice: (data) =>
+    request('/api/devices', { method: 'POST', body: JSON.stringify(data) }),
+
+  // Student App
+  studentLogin: (rollNumber, dateOfBirth) =>
+    request('/api/student/login', {
+      method: 'POST',
+      body: JSON.stringify({ roll_number: rollNumber, date_of_birth: dateOfBirth }),
+      auth: false,
+    }),
+  studentMe: () => request('/api/student/me', { studentAuth: true }),
+  studentAttendance: (limit = 30) =>
+    request(`/api/student/attendance?limit=${limit}`, { studentAuth: true }),
+  studentLocation: (latitude, longitude) =>
+    request('/api/student/location', {
+      method: 'POST',
+      body: JSON.stringify({ latitude, longitude }),
+      studentAuth: true,
+    }),
+  studentToday: () => request('/api/student/today', { studentAuth: true }),
 };

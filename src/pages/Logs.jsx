@@ -14,6 +14,7 @@ export default function Logs() {
   const [count, setCount] = useState(0);
   const [dateFilter, setDateFilter] = useState('');
   const [uidFilter, setUidFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
 
   const loadLogs = useCallback(async () => {
     setLoading(true);
@@ -21,6 +22,7 @@ export default function Logs() {
       const params = { limit: PAGE_SIZE, offset };
       if (dateFilter) params.date = dateFilter;
       if (uidFilter.trim()) params.uid = uidFilter.trim();
+      if (typeFilter) params.scan_type = typeFilter;
       const res = await api.getLogs(params);
       if (res.success) {
         setLogs(res.data.logs || []);
@@ -31,12 +33,10 @@ export default function Logs() {
     } finally {
       setLoading(false);
     }
-  }, [offset, dateFilter, uidFilter]);
+  }, [offset, dateFilter, uidFilter, typeFilter]);
 
   useEffect(() => { loadLogs(); }, [loadLogs]);
-
-  // Reset offset when filters change
-  useEffect(() => { setOffset(0); }, [dateFilter, uidFilter]);
+  useEffect(() => { setOffset(0); }, [dateFilter, uidFilter, typeFilter]);
 
   async function handleDeleteLog(uid, date) {
     if (!window.confirm(`Delete all scans for UID "${uid}" on ${date}?`)) return;
@@ -50,8 +50,8 @@ export default function Logs() {
   }
 
   function exportCSV() {
-    const headers = ['ID', 'Roll Number', 'Name', 'UID', 'Date', 'Time'];
-    const rows = logs.map(l => [l.id, l.roll_number, `${l.first_name} ${l.last_name}`, l.uid, l.scan_date, l.scan_time]);
+    const headers = ['ID', 'Roll Number', 'Name', 'UID', 'Date', 'Time', 'Type'];
+    const rows = logs.map(l => [l.id, l.roll_number, `${l.first_name} ${l.last_name}`, l.uid, l.scan_date, l.scan_time, l.scan_type || 'unknown']);
     const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -99,8 +99,18 @@ export default function Logs() {
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
         </div>
-        {(dateFilter || uidFilter) && (
-          <Button variant="ghost" size="sm" onClick={() => { setDateFilter(''); setUidFilter(''); }}>
+        <select
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+        >
+          <option value="">All Types</option>
+          <option value="checkin">Check In</option>
+          <option value="checkout">Check Out</option>
+          <option value="unknown">Unknown</option>
+        </select>
+        {(dateFilter || uidFilter || typeFilter) && (
+          <Button variant="ghost" size="sm" onClick={() => { setDateFilter(''); setUidFilter(''); setTypeFilter(''); }}>
             Clear Filters
           </Button>
         )}
@@ -112,7 +122,7 @@ export default function Logs() {
         <EmptyState
           icon={ScrollText}
           title="No logs found"
-          description={dateFilter || uidFilter ? 'Try different filters.' : 'Logs show up here when students tap their cards.'}
+          description={dateFilter || uidFilter || typeFilter ? 'Try different filters.' : 'Logs show up here when students tap their cards.'}
         />
       ) : (
         <>
@@ -127,6 +137,7 @@ export default function Logs() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">UID</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                     <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                   </tr>
                 </thead>
@@ -139,6 +150,11 @@ export default function Logs() {
                       <td className="px-4 py-3 text-gray-500 font-mono text-xs hidden md:table-cell">{l.uid}</td>
                       <td className="px-4 py-3 text-gray-500">{l.scan_date}</td>
                       <td className="px-4 py-3 text-gray-500">{l.scan_time}</td>
+                      <td className="px-4 py-3">
+                        <Badge variant={l.scan_type === 'checkout' ? 'danger' : l.scan_type === 'checkin' ? 'success' : 'default'}>
+                          {l.scan_type || 'unknown'}
+                        </Badge>
+                      </td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end">
                           <Button

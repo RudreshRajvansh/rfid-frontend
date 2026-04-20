@@ -10,6 +10,8 @@ import {
   Menu,
   X,
   Radio,
+  Wifi,
+  Smartphone,
 } from 'lucide-react';
 
 const navItems = [
@@ -18,6 +20,7 @@ const navItems = [
   { to: '/students', icon: Users, label: 'Students' },
   { to: '/attendance', icon: ClipboardList, label: 'Attendance' },
   { to: '/logs', icon: ScrollText, label: 'Logs' },
+  { to: '/devices', icon: Wifi, label: 'Devices' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 
@@ -68,6 +71,18 @@ export default function Layout() {
             </NavLink>
           ))}
         </nav>
+
+        <div className="mt-auto px-3 py-4 border-t border-gray-100">
+          <a
+            href="/student/login"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-primary-600 hover:bg-primary-50 transition-colors"
+          >
+            <Smartphone className="w-5 h-5 shrink-0" />
+            Student App ↗
+          </a>
+        </div>
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">

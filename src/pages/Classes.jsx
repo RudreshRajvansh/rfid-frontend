@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { api } from '../api';
 import { Card, CardHeader, Button, Badge, EmptyState, LoadingScreen } from '../components/UI';
 import Modal from '../components/Modal';
-import { GraduationCap, Plus, Pencil, Trash2, Users, Search } from 'lucide-react';
+import { GraduationCap, Plus, Pencil, Trash2, Users, Search, MapPin, Crosshair } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const initialForm = {
   class_name: '', department: '', semester: 1, section: '',
   room_number: '', class_teacher_name: '', class_teacher_email: '',
-  total_capacity: 60,
+  total_capacity: 60, latitude: '', longitude: '', geofence_radius: 100,
 };
 
 export default function Classes() {
@@ -50,6 +50,9 @@ export default function Classes() {
       class_teacher_name: c.class_teacher_name,
       class_teacher_email: c.class_teacher_email,
       total_capacity: c.total_capacity,
+      latitude: c.latitude || '',
+      longitude: c.longitude || '',
+      geofence_radius: c.geofence_radius || 100,
     });
     setModalOpen(true);
   }
@@ -175,6 +178,13 @@ export default function Classes() {
                     <Trash2 className="w-3.5 h-3.5 text-red-500" />
                   </Button>
                 </div>
+
+                {(c.latitude && c.longitude) && (
+                  <div className="mt-2 flex items-center gap-1 text-xs text-green-600">
+                    <MapPin className="w-3 h-3" />
+                    GPS set ({c.latitude?.toFixed(4)}, {c.longitude?.toFixed(4)}) · {c.geofence_radius || 100}m
+                  </div>
+                )}
               </div>
             </Card>
           ))}
@@ -264,6 +274,68 @@ export default function Classes() {
                 placeholder="email@example.com"
               />
             </Field>
+          </div>
+
+          {/* Geofence Section */}
+          <div className="border-t border-gray-100 pt-4 mt-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                <MapPin className="w-4 h-4" /> GPS Geofence
+              </h3>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!navigator.geolocation) { toast.error('Geolocation not available'); return; }
+                  navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                      setForm(f => ({ ...f, latitude: pos.coords.latitude.toFixed(6), longitude: pos.coords.longitude.toFixed(6) }));
+                      toast.success('Current location set!');
+                    },
+                    () => toast.error('Failed to get location'),
+                    { enableHighAccuracy: true, timeout: 10000 }
+                  );
+                }}
+                className="text-xs text-primary-600 hover:text-primary-800 font-medium flex items-center gap-1"
+              >
+                <Crosshair className="w-3.5 h-3.5" /> Use Current Location
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Field label="Latitude">
+                <input
+                  type="number"
+                  step="0.000001"
+                  value={form.latitude}
+                  onChange={(e) => setForm({ ...form, latitude: e.target.value })}
+                  className="input"
+                  placeholder="e.g. 28.649944"
+                />
+              </Field>
+              <Field label="Longitude">
+                <input
+                  type="number"
+                  step="0.000001"
+                  value={form.longitude}
+                  onChange={(e) => setForm({ ...form, longitude: e.target.value })}
+                  className="input"
+                  placeholder="e.g. 77.228001"
+                />
+              </Field>
+              <Field label="Radius (m)">
+                <input
+                  type="number"
+                  min={10}
+                  max={1000}
+                  value={form.geofence_radius}
+                  onChange={(e) => setForm({ ...form, geofence_radius: parseInt(e.target.value) || 100 })}
+                  className="input"
+                  placeholder="100"
+                />
+              </Field>
+            </div>
+            <p className="text-xs text-gray-400 mt-2">
+              Set the classroom GPS coordinates. Students within this radius will be marked as "in class".
+            </p>
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
