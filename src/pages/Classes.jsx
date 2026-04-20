@@ -61,11 +61,20 @@ export default function Classes() {
     e.preventDefault();
     setSaving(true);
     try {
+      // Convert numeric fields — HTML inputs produce strings
+      const payload = {
+        ...form,
+        semester: parseInt(form.semester) || 1,
+        total_capacity: parseInt(form.total_capacity) || 60,
+        geofence_radius: parseInt(form.geofence_radius) || 100,
+        latitude: form.latitude ? parseFloat(form.latitude) : null,
+        longitude: form.longitude ? parseFloat(form.longitude) : null,
+      };
       if (editing) {
-        await api.updateClass(editing, form);
+        await api.updateClass(editing, payload);
         toast.success('Class updated');
       } else {
-        await api.createClass(form);
+        await api.createClass(payload);
         toast.success('Class created');
       }
       setModalOpen(false);
