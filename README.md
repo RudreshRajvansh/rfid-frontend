@@ -6,8 +6,12 @@
   <a href="https://react.dev"><img src="https://img.shields.io/badge/React-19-00ADD8?logo=react&logoColor=white"></a>
   <img alt="GitHub" src="https://img.shields.io/github/license/RudreshRajvansh/rfid-frontend">
   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/RudreshRajvansh/rfid-frontend">
-  <img alt="Deployed on Vercel" src="https://img.shields.io/badge/deployed%20on-vercel-000000?logo=vercel&logoColor=white">
+  <a href="https://rfid-frontend-dusky.vercel.app/"><img alt="Deployed on Vercel" src="https://img.shields.io/badge/deployed%20on-vercel-000000?logo=vercel&logoColor=white"></a>
   <a href="https://www.repostatus.org/#inactive"><img src="https://www.repostatus.org/badges/latest/inactive.svg" alt="Project Status: Inactive" /></a>
+</p>
+
+<p align="center">
+  <a href="https://rfid-frontend-dusky.vercel.app/"><strong>Live Demo →</strong></a>
 </p>
 
 ------
