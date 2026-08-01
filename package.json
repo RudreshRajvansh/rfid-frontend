@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Admin panel for RFID-based smart attendance system",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

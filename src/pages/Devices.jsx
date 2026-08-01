@@ -44,7 +44,7 @@ export default function Devices() {
   function isOnline(lastSeen) {
     if (!lastSeen) return false;
     const diff = Date.now() - new Date(lastSeen).getTime();
-    return diff < 10 * 60 * 1000; // 10 minutes
+    return diff < 10 * 60 * 1000;
   }
 
   if (loading) return <LoadingScreen />;

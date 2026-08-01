@@ -3,12 +3,12 @@ import { api } from '../api';
 
 const StudentContext = createContext(null);
 
-const PING_INTERVAL = 2 * 60 * 1000; // 2 minutes
+const PING_INTERVAL = 2 * 60 * 1000;
 
 export function StudentProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('student_token') || '');
   const [student, setStudent] = useState(null);
-  const [gpsStatus, setGpsStatus] = useState('idle'); // idle | tracking | in_range | out_of_range | error | unsupported
+  const [gpsStatus, setGpsStatus] = useState('idle');
   const [lastPing, setLastPing] = useState(null);
   const watchRef = useRef(null);
   const pingTimerRef = useRef(null);
@@ -21,7 +21,6 @@ export function StudentProvider({ children }) {
       const t = res.data.token;
       localStorage.setItem('student_token', t);
       setToken(t);
-      // Use the same field names the /me API returns so the UI works immediately
       setStudent({
         student_name: res.data.student_name,
         roll_number: res.data.roll_number,
@@ -63,7 +62,6 @@ export function StudentProvider({ children }) {
     if (token) loadProfile();
   }, [token, loadProfile]);
 
-  // GPS tracking
   const hasSucceededRef = useRef(false);
 
   const sendPing = useCallback(async (lat, lng) => {
@@ -77,10 +75,9 @@ export function StudentProvider({ children }) {
       }
     } catch (e) {
       console.error('[GPS] Ping failed:', e.message);
-      // Only show error if we never had a successful ping
       if (!hasSucceededRef.current) setGpsStatus('error');
     }
-  }, []); // No dependencies — stable reference
+  }, []);
 
   const startTracking = useCallback(() => {
     if (!navigator.geolocation) {
@@ -98,18 +95,16 @@ export function StudentProvider({ children }) {
     const onError = (err) => {
       console.warn('[GPS] Geolocation error:', err.message, '(code:', err.code, ')');
       if (err.code === 1) {
-        setGpsStatus('error'); // permission denied
+        setGpsStatus('error');
       } else {
-        setGpsStatus('error'); // position unavailable or timeout
+        setGpsStatus('error');
       }
     };
 
     const opts = { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 };
 
-    // Get position immediately
     navigator.geolocation.getCurrentPosition(onSuccess, onError, opts);
 
-    // Then every PING_INTERVAL
     pingTimerRef.current = setInterval(() => {
       navigator.geolocation.getCurrentPosition(onSuccess, onError, opts);
     }, PING_INTERVAL);
@@ -126,7 +121,6 @@ export function StudentProvider({ children }) {
     }
   }, []);
 
-  // Auto-start tracking when logged in
   useEffect(() => {
     if (isLoggedIn) {
       startTracking();

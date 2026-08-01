@@ -17,7 +17,6 @@ const Devices = lazy(() => import('./pages/Devices'));
 const Settings = lazy(() => import('./pages/Settings'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
-// Student app
 const StudentLogin = lazy(() => import('./pages/student/StudentLogin'));
 const StudentDashboard = lazy(() => import('./pages/student/StudentDashboard'));
 const StudentHistory = lazy(() => import('./pages/student/StudentHistory'));

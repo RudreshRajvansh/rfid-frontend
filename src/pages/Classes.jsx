@@ -61,7 +61,6 @@ export default function Classes() {
     e.preventDefault();
     setSaving(true);
     try {
-      // Convert numeric fields — HTML inputs produce strings
       const payload = {
         ...form,
         semester: parseInt(form.semester) || 1,

@@ -8,9 +8,14 @@ Built with **React 19** · **Tailwind CSS v4** · **Vite 7** · **Recharts**
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen)
-![License](https://img.shields.io/badge/license-private-red)
+![License](https://img.shields.io/github/license/RudreshRajvansh/rfid-frontend)
 
 </div>
+
+---
+
+> [!Note]
+> This project is not under active development right now. It still works and is documented as-is — if you'd like to pick it up, extend it, or fix something, contributions are very welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
@@ -208,7 +213,6 @@ rfid-frontend/
 ├── vite.config.js
 ├── CONTRIBUTING.md
 ├── SECURITY.md
-├── FRONTEND_SUMMARY.md         # Detailed technical documentation
 └── README.md
 ```
 
@@ -395,4 +399,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
 
 ## License
 
-**Private** — not for redistribution without permission.
+MIT — see [LICENSE](LICENSE).

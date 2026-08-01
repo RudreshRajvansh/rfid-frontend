@@ -57,17 +57,14 @@ async function request(endpoint, options = {}) {
 }
 
 export const api = {
-  // Health
   health: () => request('/', { auth: false }),
 
-  // Dashboard stats
   getStats: () => request('/api/stats', { auth: false }),
   getWeeklyStats: (classId) => {
     const q = classId ? `?class_id=${encodeURIComponent(classId)}` : '';
     return request(`/api/stats/weekly${q}`, { auth: false });
   },
 
-  // Scan
   scan: (uid, macAddress) =>
     request('/api/scan', {
       method: 'POST',
@@ -75,7 +72,6 @@ export const api = {
       auth: false,
     }),
 
-  // Attendance
   getDailyReport: (date, classId) =>
     request(`/api/attendance/daily?date=${encodeURIComponent(date)}&class_id=${encodeURIComponent(classId)}`, { auth: false }),
   getLiveAttendance: (classId) => {
@@ -87,7 +83,6 @@ export const api = {
   exportAttendance: (classId, date) =>
     request(`/api/export?class_id=${encodeURIComponent(classId)}&date=${encodeURIComponent(date)}`, { raw: true }),
 
-  // Classes
   getClasses: () => request('/api/classes'),
   getClass: (id) => request(`/api/class?id=${encodeURIComponent(id)}`),
   createClass: (data) =>
@@ -97,7 +92,6 @@ export const api = {
   deleteClass: (id) =>
     request(`/api/class?id=${encodeURIComponent(id)}`, { method: 'DELETE' }),
 
-  // Students
   getStudents: (classId) => {
     const q = classId ? `?class_id=${encodeURIComponent(classId)}` : '';
     return request(`/api/students${q}`);
@@ -112,7 +106,6 @@ export const api = {
   getStudentHistory: (uid, limit = 30, offset = 0) =>
     request(`/api/student/history?uid=${encodeURIComponent(uid)}&limit=${limit}&offset=${offset}`),
 
-  // Logs
   getLogs: (params = {}) => {
     const q = new URLSearchParams();
     if (params.limit) q.set('limit', params.limit);
@@ -125,12 +118,10 @@ export const api = {
   deleteLog: (uid, date) =>
     request(`/api/log?uid=${encodeURIComponent(uid)}&date=${encodeURIComponent(date)}`, { method: 'DELETE' }),
 
-  // Devices
   getDevices: () => request('/api/devices'),
   createDevice: (data) =>
     request('/api/devices', { method: 'POST', body: JSON.stringify(data) }),
 
-  // Student App
   studentLogin: (rollNumber, dateOfBirth) =>
     request('/api/student/login', {
       method: 'POST',

@@ -37,3 +37,8 @@ Thumbs.db
 # misc
 *.local
 .vercel
+
+# personal planning docs — not part of the public repo
+FRONTEND_SUMMARY.md
+FRONTEND_SUMMARY.pdf
+*.pdf

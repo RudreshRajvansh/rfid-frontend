@@ -31,8 +31,8 @@ export default function Dashboard() {
       if (statsRes.status === 'fulfilled' && statsRes.value.success) setStats(statsRes.value.data);
       if (weeklyRes.status === 'fulfilled' && weeklyRes.value.success) setWeekly(weeklyRes.value.data || []);
       if (liveRes.status === 'fulfilled' && liveRes.value.success) setLive(liveRes.value.data?.records || []);
-    } catch {
-      // silent
+    } catch (err) {
+      console.error('Failed to load dashboard data:', err);
     } finally {
       setLoading(false);
     }

@@ -12,7 +12,9 @@ export default function StudentHistory() {
     try {
       const res = await api.studentAttendance(60);
       if (res.success) setHistory(res.data?.history || []);
-    } catch {} finally {
+    } catch (err) {
+      console.error('Failed to load attendance history:', err);
+    } finally {
       setLoading(false);
     }
   }
@@ -45,7 +47,6 @@ export default function StudentHistory() {
         const hasGps = day.in_class_percent > 0;
         const gpsGood = day.in_class_percent >= 60;
 
-        // Color logic: green=present+GPS verified, yellow=present no GPS, red=absent
         let borderColor = 'border-red-200 bg-red-50/50';
         let statusColor = 'text-red-600';
         if (isPresent && gpsGood) {

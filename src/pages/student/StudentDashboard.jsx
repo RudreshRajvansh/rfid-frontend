@@ -7,19 +7,21 @@ export default function StudentDashboard() {
   const { student, gpsStatus, lastPing, loadProfile } = useStudent();
   const [today, setToday] = useState(null);
 
+  async function loadToday() {
+    try {
+      const res = await api.studentToday();
+      if (res.success) setToday(res.data);
+    } catch (err) {
+      console.error('Failed to load today status:', err);
+    }
+  }
+
   useEffect(() => {
     loadProfile();
     loadToday();
     const interval = setInterval(loadToday, 30000);
     return () => clearInterval(interval);
-  }, []);
-
-  async function loadToday() {
-    try {
-      const res = await api.studentToday();
-      if (res.success) setToday(res.data);
-    } catch {}
-  }
+  }, [loadProfile]);
 
   const s = student || {};
   const t = today || {};
